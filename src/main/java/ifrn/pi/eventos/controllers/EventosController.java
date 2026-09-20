@@ -60,7 +60,7 @@ public class EventosController {
 		md.setViewName("eventos/detalhes");
 		Evento evento = opt.get();
 		md.addObject("evento", evento);
-		
+
 		List<Convidado> convidados = cr.findByEvento(evento);
 		md.addObject("convidados", convidados);
 
@@ -83,8 +83,43 @@ public class EventosController {
 		convidado.setEvento(evento);
 
 		cr.save(convidado);
-		
+
 		return "redirect:/eventos/{idEvento}";
 	}
 
+	@GetMapping("/{id}/remover")
+	public String apagarEvento(@PathVariable Long id) {
+
+		Optional<Evento> opt = er.findById(id);
+
+		if (!opt.isEmpty()) {
+			Evento evento = opt.get();
+
+			List<Convidado> convidados = cr.findByEvento(evento);
+
+			cr.deleteAll(convidados);
+
+			er.delete(evento);
+
+		}
+
+		return "redirect:/eventos";
+	}
+
+	@GetMapping("/{idEvento}/remove")
+	public String apagarConvidado(@PathVariable Long idEvento) {
+		
+		Optional<Convidado> opt = cr.findById(idEvento);
+		
+		if(!opt.isEmpty()) {
+		
+			cr.delete(opt.get());
+			
+		}
+		
+		return "redirect:/eventos/{idEvento}";
+		
+	}
+	
 }
+
